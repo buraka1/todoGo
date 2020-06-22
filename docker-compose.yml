@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql-server
+    restart: always
+    ports:
+      - 35306:3306
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=todoapp
+      - MYSQL_ROOT_PASSWORD=root_secret
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123456
+    networks:
+      - todosnet
+  api:
+    container_name: todos_api
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - todosnet
+    depends_on:
+      - db
+
+networks:
+  todosnet:
+    driver: bridge
